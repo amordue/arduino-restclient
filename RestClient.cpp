@@ -1,4 +1,5 @@
 #include "RestClient.h"
+#include <ESP8266WiFi.h>
 
 #ifdef HTTP_DEBUG
 #define HTTP_DEBUG_PRINT(string) (Serial.print(string))
@@ -20,21 +21,6 @@ RestClient::RestClient(const char* _host, int _port){
   port = _port;
   num_headers = 0;
   contentType = "x-www-form-urlencoded";	// default
-}
-
-void RestClient::dhcp(){
-  byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
-  if (begin(mac) == 0) {
-    Serial.println("Failed to configure Ethernet using DHCP");
-  }
-  //give it time to initialize
-  delay(1000);
-}
-
-int RestClient::begin(byte mac[]){
-  return Ethernet.begin(mac);
-  //give it time to initialize
-  delay(1000);
 }
 
 // GET path

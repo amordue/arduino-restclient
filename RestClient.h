@@ -1,6 +1,5 @@
 #include <Arduino.h>
-#include <SPI.h>
-#include <Ethernet.h>
+#include <ESP8266WiFi.h>
 
 class RestClient {
 
@@ -45,7 +44,7 @@ class RestClient {
     int del(const char*, const char*, String*);
 
   private:
-    EthernetClient client;
+    WiFiClient client;
     int readResponse(String*);
     void write(const char*);
     const char* host;

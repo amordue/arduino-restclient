@@ -1,6 +1,10 @@
-# RestClient for Arduino
+# RestClient for ESP8266 Arduino
 
-HTTP Request library for Arduino and the Ethernet shield.
+HTTP Request library for the ESP8266 using the Arduino development environment.
+
+Forked from the original library which was for a regular Arduino plus Ethernet shield. This only required very minimal changes, to get it working with the ESP8266, thanks [CSquared](https://github.com/csquared)!.
+
+For details on how to get started with the ESP8266 using the Arduino IDE take a look at [Adafruit's tutorial](https://learn.adafruit.com/adafruit-huzzah-esp8266-breakout/using-arduino-ide).
 
 # Install
 
@@ -10,18 +14,43 @@ where `~/Documents/Arduino` is your sketchbook directory.
     > cd ~/Documents/Arduino
     > mkdir libraries
     > cd libraries
-    > git clone https://github.com/csquared/arduino-restclient.git RestClient
+    > git clone https://github.com/alexmordue/arduino-restclient.git RestClient
 
 # Usage
 
 ### Include
 
-You need to have the `Ethernet` library already included.
+Just include it and the ESP8266 library.
 
 ```c++
-#include <Ethernet.h>
-#include <SPI.h>
+#include <ESP8266.h>
 #include "RestClient.h"
+```
+
+## Setup
+
+You should setup the WiFi connection before making a request, look at the included examples for more details (if needed).
+```c++
+const char* ssid     = "yourSSID";
+const char* password = "yourPassword";
+
+void setup(){
+  Serial.begin(115200);
+  delay(10);
+
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("");
+  Serial.println("WiFi connected");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+}
+
 ```
 
 ### RestClient(host/ip, [port])
@@ -37,50 +66,6 @@ Use a local IP and an explicit port:
 ```c++
 RestClient client = RestClient("192.168.1.50",5000);
 ```
-
-### dhcp()
-
-Sets up `EthernetClient` with a mac address of `DEADBEEFFEED`
-
-```c++
-  client.dhcp()
-```
-
-Note: you can have multiple RestClient objects but only need to call
-this once.
-
-Note: if you have multiple Arduinos on the same network, you'll need
-to give each one a different mac address.
-
-### begin(byte mac[])
-
-It just wraps the `EthernetClient` call to `begin` and DHCPs.
-Use this if you need to explicitly set the mac address.
-
-```c++
-  byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
-  if (client.begin(mac) == 0) {
-     Serial.println("Failed to configure Ethernet using DHCP");
-  }
-```
-
-### Manual Ethernet Setup
-
-You can skip the above methods and just configure the EthernetClient yourself:
-
-```c++
-  byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
-  //the IP address for the shield:
-  byte ip[] = { 192, 168, 2, 11 };
-  Ethernet.begin(mac,ip);
-```
-
-```c++
-  byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
-  Ethernet.begin(mac);
-```
-
-This is especially useful for debugging network connection issues.
 
 ## RESTful methods
 
@@ -153,6 +138,4 @@ Everything happening in the client will get printed to the Serial port.
 
 # Thanks
 
-[ricardochimal](https://github.com/ricardochimal) For all his c++ help.  Couldn't have done this without you!
-
-[theycallmeswift](https://github.com/theycallmeswift) Helping incept and debug v1.0
+[csquared](https://github.com/csquared) For all his work creating this library!
